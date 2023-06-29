@@ -13,7 +13,9 @@ def consonant_count(s):
     return len(re.findall('[bcdfghjklmnpqrstvwxz]', s.lower()))
 
 
-s = 'h^$&^#$&^elLo world'
+s = 'h^$&^#$&^elLo worl'
+
+
 qq(consonant_count(s))
 
 end = timer()
