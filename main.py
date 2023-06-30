@@ -4,19 +4,17 @@ import re
 start = timer()
 qq = print
 
-
-def consonant_count(s):
-    """
-    The function that takes a string of English-language text and returns the number of consonants in the string.
-    """
-
-    return len(re.findall('[bcdfghjklmnpqrstvwxz]', s.lower()))
+def to_industrial(time):
+    return
 
 
-s = 'h^$&^#$&^elLo worl'
+def to_normal(time):
+    return
 
 
-qq(consonant_count(s))
+time = 1
+qq(to_industrial(time))
+qq(to_normal(time))
 
 end = timer()
 print(end - start)
