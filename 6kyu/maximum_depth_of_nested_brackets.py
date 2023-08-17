@@ -32,7 +32,6 @@ def strings_in_max_depth(s):
     return [s[res_indexes[i] + 1:res_indexes[i + 1]] for i in range(0, len(res_indexes), 2)]
 
 
-# s = "AA(XX)(YY)(U)"
 # s = "(A(B))"
 # s = "((A)B)"
 s = "AA(XX((YY))(U))"
