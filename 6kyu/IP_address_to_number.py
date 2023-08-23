@@ -23,6 +23,7 @@ def num_to_ip(num):
     return '.'.join([str(int(i, 2)) for i in chunks])
 
 
+
 ip = '192.168.1.1'
 num = 167772160
 print(ip_to_num(ip))
