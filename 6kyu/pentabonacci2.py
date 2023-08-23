@@ -31,7 +31,7 @@ def count_odd_pentaFib(n):
     return len([memo[i] for i in memo if memo[i] % 2]) - 1
 
 
-n = 2
+n = 10
 print(count_odd_pentaFib(n))
 
 # the shortest solution
