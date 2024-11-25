@@ -6,6 +6,8 @@
 # The first value of the interval will always be less than the second value.
 # Interval example: [1, 5] is an interval from 1 to 5. The length of this
 # interval is 4.
+#
+# https://www.codewars.com/kata/52b7ed099cdc285c300001cd/train/python
 
 def sum_of_intervals(intervals, result=0):
     """ Recursive function, that accepts an array of intervals,
