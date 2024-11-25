@@ -1,77 +1,43 @@
-# Write a function called sumIntervals/sum_intervals that accepts an array of intervals, and returns the sum of all the interval lengths. Overlapping intervals should only be counted once.
-# Intervals
+# Write a function called sumIntervals/sum_intervals that accepts an array
+# of intervals, and returns the sum of all the interval lengths.
+# Overlapping intervals should only be counted once.
 #
 # Intervals are represented by a pair of integers in the form of an array.
 # The first value of the interval will always be less than the second value.
 # Interval example: [1, 5] is an interval from 1 to 5. The length of this
 # interval is 4.
-def foo(x, y):
-    return min(x[0], y[0]), max(x[1], y[1])
 
+def sum_of_intervals(intervals, result=0):
+    """ Recursive function, that accepts an array of intervals,
+        and returns the sum of all the interval lengths. """
 
-def sorting(intervals, sorted_values, res):
-    if intervals == []:
-        # return sorted_values
-        return res
-    x = f'{intervals[0]}'
-    # print(intervals)
-    sorted_values[x] = intervals[0]
-    # print(sorted_values)
-    intervals.remove(intervals[0])
-    # print(intervals)
-    # print(intervals == [])
-
-    if intervals == []:
-        res += subt(sorted_values[x])
-        # print(sorted_values[x])
-        # print(res)
-        # return sorted_values
-        return res
-
-    else:
-        q = iter(intervals)
+    if intervals != []:
+        buffer = intervals[0]
+        iterator = iter(intervals)
         while True:
             try:
-                z = next(q)
-                # print(z)
-                # # if int(y[0][1]) <= (intervals[0][0]) <= int(y[0][-2]):
-                # print(sorted_values[x][0])
-                # print(sorted_values[x][0])
-                # print(z[0])
-                # print(sorted_values[x][1])
-                if sorted_values[x][0] <= z[0] <= sorted_values[x][1] or \
-                        sorted_values[x][0] <= z[1] <= sorted_values[x][1]:
-                    a = list(map(foo, [sorted_values[x]], [z]))[0]
-                    sorted_values[x] = a
-                    intervals.remove(z)
-                    # print(intervals, sorted_values)
-                # break
+                item = next(iterator)
+                condition1 = buffer[0] <= item[0] <= buffer[1] or \
+                    buffer[0] <= item[1] <= buffer[1]
+                condition2 = item[0] <= buffer[0] and \
+                    buffer[1] <= item[1]
+                if condition1 or condition2:
+                    buffer = (
+                            min(buffer[0], item[0]),
+                            max(buffer[1], item[1])
+                    )
+                    intervals.remove(item)
+                    iterator = iter(intervals)
                 continue
             except StopIteration:
-                res += subt(sorted_values[x])
-                # print(sorted_values)
-                # print(res)
-                return sorting(intervals, sorted_values, res)
+                result += buffer[1] - buffer[0]
+                return sum_of_intervals(intervals, result)
 
-        # return sorting(intervals, sorted_values)
-
-
-def subt(x):
-    return x[1]-x[0]
-
-
-def sum_of_intervals(intervals):
-    sorted_values = {}
-    res = 0
-    res = sorting(intervals, sorted_values, res)
-
-    # return sum(map(subt, sorting(intervals, sorted_values).values()))
-    # return sum(sorting(intervals, sorted_values).values())
-    return res
+    return result
 
 
 if __name__ == '__main__':
-    print(sum_of_intervals([(1, 5), (1, 5)]))
+    print(sum_of_intervals([(217, 225), (-209, 436), (-117, 385)]))
 # test.assert_equals(sum_of_intervals([(1, 5)]), 4)
 # test.assert_equals(sum_of_intervals([(1, 5), (6, 10)]), 8)
 # test.assert_equals(sum_of_intervals([(1, 5), (1, 5)]), 4)
