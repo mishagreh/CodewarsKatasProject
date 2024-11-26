@@ -26,64 +26,51 @@ class RomanNumerals:
     @staticmethod
     def to_roman(input: int) -> str:
 
-        di = {
-            '3': {'x': 'M', 'y': 'undefined', 'z': 'undefined'},
-            '2': {'x': 'C', 'y': 'D', 'z': 'M'},
-            '1': {'x': 'X', 'y': 'L', 'z': 'C'},
-            '0': {'x': 'I', 'y': 'V', 'z': 'X'}
-        }
+        pos = 'IVX', 'XLC', 'CDM', 'M  '
         res = ''
-        str_val = str(input)
+        str_input = str(input)
 
-        for i in range(len(str_val)):
-            if int(str_val[i]):
-                x = di[str(len(str_val)-1-i)]['x']
-                y = di[str(len(str_val)-1-i)]['y']
-                z = di[str(len(str_val)-1-i)]['z']
+        for i, j in enumerate(str_input):
 
-                digits = {
-                    '1': f'{x}',
-                    '2': 2*f'{x}',
-                    '3': 3*f'{x}',
-                    '4': f'{x}{y}',
-                    '5': f'{y}',
-                    '6': f'{y}{x}',
-                    '7': f'{y}' + 2*f'{x}',
-                    '8': f'{y}' + 3*f'{x}',
-                    '9': f'{x}{z}'
-                }
-                res += digits[str_val[i]]
-            else:
-                continue
+            x, y, z = (pos[len(str_input)-1-i][n] for n in (0, 1, 2))
+
+            digits = {
+                '0': '',
+                '1': f'{x}',
+                '2': 2*f'{x}',
+                '3': 3*f'{x}',
+                '4': f'{x}{y}',
+                '5': f'{y}',
+                '6': f'{y}{x}',
+                '7': f'{y}' + 2*f'{x}',
+                '8': f'{y}' + 3*f'{x}',
+                '9': f'{x}{z}'
+            }
+            res += digits[j]
 
         return res
 
     @staticmethod
     def from_roman(input: str) -> int:
 
-        di = {
-            'M': 1000,
-            'D': 500,
-            'C': 100,
-            'L': 50,
-            'X': 10,
-            'V': 5,
-            'I': 1
+        letters = {
+            'M': 1000, 'D': 500, 'C': 100, 'L': 50, 'X': 10, 'V': 5, 'I': 1
         }
 
         sum = 0
         buf = ' '
         for i in input:
-            if (i in 'VX') and (buf == 'I') or \
-                (i in 'LC') and (buf == 'X') or \
-                    (i in 'DM') and (buf == 'C'):
-                sum += -2*di[buf] + di[i]
+            cond_1 = (i in 'VX') and (buf == 'I')
+            cond_2 = (i in 'LC') and (buf == 'X')
+            cond_3 = (i in 'DM') and (buf == 'C')
+            if cond_1 or cond_2 or cond_3:
+                sum += letters[i] - 2*letters[buf]
             else:
-                sum += di[i]
+                sum += letters[i]
             buf = i
 
         return sum
 
 
 if __name__ == '__main__':
-    print(RomanNumerals('LXXXVI').res)
+    print(RomanNumerals(2000).res)
