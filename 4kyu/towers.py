@@ -81,7 +81,8 @@ class Track:
         self.track = self._build_track(battlefield)
 
     def _build_track(self, battlefield):
-        # pass
+
+        # Looking for the start point and counting '1's
         ones = 0
         for i in battlefield:
             for j in i:
@@ -90,50 +91,25 @@ class Track:
                     y = battlefield.index(i)
                 elif j == '1':
                     ones += 1
-                continue
-        print(x, y)
-        print(ones)
 
+        # Scaning the area for '1's. 4 candidate cells for each '1'
         self.track = [(x, y)]
         while ones > 0:
-            try:
-                if (x-1 >= 0) and (y >= 0) and battlefield[y][x-1] == '1' and (x-1, y) not in self.track:
-                    self.track.append((x-1, y))
-                    x, y = x-1, y
-                    print(1, x, y)
-            except Exception:
-                print(Exception)
-                # continue
-            try:
-                if (x+1 >= 0) and (y >= 0) and battlefield[y][x+1] == '1' and (x+1, y) not in self.track:
-                    self.track.append((x+1, y))
-                    x, y = x+1, y
-                    print(2, x, y)
-            except Exception:
-                print(Exception)
-                # continue
-            try:
-                if (x >= 0) and (y-1 >= 0) and battlefield[y-1][x] == '1' and (x, y-1) not in self.track:
-                    self.track.append((x, y-1))
-                    x, y = x, y-1
-                    print(3, x, y)
-            except Exception:
-                print(Exception)
-                # continue
-            try:
-                if (x >= 0) and (y+1 >= 0) and battlefield[y+1][x] == '1' and (x, y+1) not in self.track:
-                    self.track.append((x, y+1))
-                    x, y = x, y+1
-                    print(4, x, y)
-            except Exception:
-                print(Exception)
-                # continue
-
-            finally:
-                ones -= 1
-                print(ones)
-        print(self.track)
-        pprint(battlefield)
+            for i, j in ((x-1, y), (x+1, y), (x, y-1), (x, y+1)):
+                try:
+                    if (
+                        (i >= 0) and
+                        (j >= 0) and
+                        battlefield[j][i] == '1' and
+                        (i, j) not in self.track
+                    ):
+                        self.track.append((i, j))
+                        x, y = i, j
+                except Exception:
+                    print('Exception occured.')
+                    print('The candidate cell is beyond the area.')
+                    print('Or counted already.')
+            ones -= 1
 
 
 class Turret:
