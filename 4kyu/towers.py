@@ -31,11 +31,8 @@
 # Output
 # Return the integer sum of total health points of all aliens that successfully
 # penetrate our defense.
-from pprint import pprint
 import math
 from collections import deque
-from itertools import takewhile
-from operator import sub
 
 
 class Turret:
@@ -68,8 +65,6 @@ class Path:
                         grid.index(i)
                     )
 
-        pprint(self.turrets_coord)
-
         # Scaning the area for '1's. 4 candidate cells around each '1'
         path = [(x, y)]
         for _ in range(self._ones):
@@ -83,7 +78,6 @@ class Path:
                     path.append((i, j))
                     x, y = i, j
 
-        print(path)
         return path
 
     def t_range(self, turrets):
@@ -101,178 +95,65 @@ class Path:
         return all_attacked_cells
 
 
-# def tower_defense(grid, turrets, aliens):
-#     x = Path(grid, turrets)
-#     path = x.path
-#     all_turrets = x.all_attacked_cells
-#     pprint(all_turrets)
-#     extra_path = [(-1, -1) for i in range(len(aliens))]
-#     path = path + extra_path
-#     z = deque(maxlen=len(aliens))
-#     for q in path:
-#         z.appendleft(q)
-#         qq = list(zip(aliens, z))
-#         print(qq)
-#         print(' ')
-#
-#         the_turrets = [Turret(i, turrets[i]) for i in turrets]
-#
-#         for i, (health, cell) in enumerate(qq):
-#             if health == 0:
-#                 continue
-#             else:
-#                 current_cell_attackers = list(filter(
-#                     lambda x: cell in all_turrets[x.name],
-#                     the_turrets
-#                 ))
-#
-#                 if i == 26:
-#                     print('alien:', i)
-#                     print('health in aliens:', aliens[i])
-#                     print('health in path:', health)
-#                     print('cell in path:', cell)
-#                     for f in current_cell_attackers:
-#                         print('attacker:', f.name, 'range:', f.range, 'rate:', f.rate)
-#
-#                 # print(current_cell_attackers)
-#                 if current_cell_attackers == []:
-#                     continue
-#                 else:
-#                     shots = sum([i.rate for i in current_cell_attackers])
-#                     if shots == 0:
-#                         continue
-#                     if i == 26:
-#                     # print('before shooting, alien number:', i)
-#                         print('shots planned:', shots)
-#                     # print(shots)
-#                     for shot in range(shots):
-#                         if health == 0:
-#                             break
-#                         else:
-#                             current_cell_attackers = list(
-#                                 filter(lambda i: i.rate > 0, current_cell_attackers)
-#                             )
-#                         # if i == 28:
-#                         # print('shooting:', current_cell_attackers)
-#                         # print(current_cell_attackers)
-#
-#                             for turret in current_cell_attackers:
-#                         # #     print('before', 'i:', i, 'health:', health, 'cell:', cell)
-#                         # #     print('range')
-#                         # #     pprint(all_turrets[turret.name]['attacked_cells'])
-#                         # #     print('path before shooting:', qq)
-#                                 if health == 0:
-#                                     shots1 = sum([i.rate for i in current_cell_attackers])
-#                                     print(i, cell)
-#                                     print('health became 0, shots left', shots1)
-#                                     break
-#                                 else:
-#                                     health -= 1
-#                                     turret.rate -= 1
-#                                     qq[i] = health, cell
-#                                     # print('path after shooting:', qq)
-#                                     aliens[i] = health
-#                                     # print('after', 'i:', i, 'health:', health, 'cell:', cell)
-#     print(aliens)
-#     print(sum(aliens))
-#     return sum(aliens)
-
-
-# grid = [
-#     '0111111',
-#     '  A  B1',
-#     ' 111111',
-#     ' 1     ',
-#     ' 1C1111',
-#     ' 111 D1',
-#     '      1'
-# ]
-#
-# turrets = {'A': [3, 2], 'B': [1, 4], 'C': [2, 2], 'D': [1, 3]}
-# aliens = [30, 14, 27, 21, 13, 0, 15, 17, 0, 18, 26]
-
 def tower_defense(grid, turrets, aliens):
-    x = Path(grid, turrets)
-    path = x.path
-    all_turrets = x.all_attacked_cells
-    # pprint(all_turrets)
+    path_and_attacked_cells = Path(grid, turrets)
+    path = path_and_attacked_cells.path
+    all_attacked_cells = path_and_attacked_cells.all_attacked_cells
     extra_path = [(-1, -1) for i in range(len(aliens))]
     path = path + extra_path
-    z = deque(maxlen=len(aliens))
-    # for q in path[:5]:
-    for q in path:
-        z.appendleft(q)
-        print('______')
-        print('z:', z)
+    move = deque(maxlen=len(aliens))
 
-        new_dict = {}
-        for i in all_turrets:
+    for position in path:
+        move.appendleft(position)
+
+        targeted_cells = {}
+        for i in all_attacked_cells:
             targeted = []
-            for j in all_turrets[i]:
-                for k in z:
-                    if k == j:
+            for j in all_attacked_cells[i]:
+                for k in move:
+                    if (k == j) and (aliens[move.index(k)] != 0):
                         targeted.append(k)
-            new_dict[i] = targeted[::-1]
+            if targeted != []:
+                targeted_cells[i] = targeted[::-1]
 
-        print('new_dict:')
-        pprint(new_dict)
+        all_turrets = {i: Turret(i, turrets[i]) for i in turrets}
 
-        the_turrets = {i: Turret(i, turrets[i]) for i in turrets}
-        print('all the turrets objects:', the_turrets.keys())
-
-        # for turret in new_dict:
-        turrets_with_target = tuple(filter(lambda x: new_dict[x] != [], new_dict))
-        print('all the turrets with target:', turrets_with_target)
+        turrets_with_target = targeted_cells
 
         shots = sum((
-            the_turrets[i].rate for i in turrets_with_target
+            all_turrets[i].rate for i in turrets_with_target
         ))
-        print('all the shots for turrets_with_target:', shots)
 
         for shot in range(shots):
-            print('start iterating over the shots')
-
-            turrets_with_target = tuple(filter(lambda x: the_turrets[x].rate > 0, turrets_with_target))
-            print('turrets with target with rate > 0:', turrets_with_target)
+            turrets_with_target = tuple(filter(
+                lambda x: all_turrets[x].rate > 0,
+                turrets_with_target
+            ))
+            if turrets_with_target == ():
+                break
 
             for turret in turrets_with_target:
-                print('start iterating over turrets with target. Shooting')
-                print('___')
-                print('aliens:')
-                print(aliens)
-                print('current turret:', turret)
-
-                if new_dict[turret] == []:
-                    print('no cells for the turret, go to the next turret')
+                if targeted_cells[turret] == []:
                     continue
 
-                for cell in new_dict[turret]:
-                    ndx = z.index(new_dict[turret][0])
-                    print('current alien index:', ndx)
-                    print('current target cell:', new_dict[turret][0])
-                    print('current alien health:', aliens[ndx])
+                for cell in targeted_cells[turret]:
+                    ndx = move.index(targeted_cells[turret][0])
 
                     if aliens[ndx] == 0:
-                        print('cell health is 0, remove the cell, go to the next cell or turret')
-                        new_dict[turret] = list(filter(
-                            lambda x: new_dict[turret].index(x) != 0, new_dict[turret]
+                        targeted_cells[turret] = list(filter(
+                            lambda x: targeted_cells[turret].index(x) != 0,
+                            targeted_cells[turret]
                         ))
-                        # new_dict[turret].pop(0)
-                        if new_dict[turret] == []:
-                            print("no cells in turret range, continue for the next turret")
+                        if targeted_cells[turret] == []:
                             break
                         else:
-                            print('continue with the next cell in turret range')
                             continue
                     aliens[ndx] -= 1
-                    the_turrets[turret].rate -= 1
-                    print('health and turret rate decreased')
-                    print('aliens after the shot:')
-                    print(aliens)
+                    all_turrets[turret].rate -= 1
                     break
 
-    print(aliens)
     print(sum(aliens))
+    return sum(aliens)
 
 
 grid = [
