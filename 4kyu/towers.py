@@ -33,6 +33,7 @@
 # penetrate our defense.
 import math
 from collections import deque
+import pdb
 
 
 class Turret:
@@ -104,6 +105,7 @@ def tower_defense(grid, turrets, aliens):
     move = deque(maxlen=len(aliens))
 
     for position in path:
+        breakpoint()
         move.appendleft(position)
 
         targeted_cells = {}
@@ -118,6 +120,7 @@ def tower_defense(grid, turrets, aliens):
 
         all_turrets = {i: Turret(i, turrets[i]) for i in turrets}
 
+        breakpoint()
         turrets_with_target = targeted_cells
 
         shots = sum((
@@ -172,8 +175,8 @@ grid = [
 # turrets = {'A': [1, 2], 'B': [1, 5], 'C': [1, 4], 'D': [3, 3], 'E': [4, 4],
 #            'F': [1, 2], 'G': [2, 2], 'H': [1, 3], 'I': [3, 3], 'J': [1, 4],
 #            'K': [1, 2]}
-# aliens = [66, 44, 63, 0, 51, 44, 70, 0, 42, 70, 47, 63, 64, 58, 44, 69, 53, 0,
-#           61, 63, 0, 42, 68, 0, 58, 65, 55, 51, 55, 56, 55, 58, 55, 52, 48]
+# aliens = [66, 44, 63, 0, 51, 44, 70, 0, 42, 70, 47, 63, 64, 58, 44, 69, 53,
+# 0, 61, 63, 0, 42, 68, 0, 58, 65, 55, 51, 55, 56, 55, 58, 55, 52, 48]
 
 turrets = {'A': [1, 2], 'B': [1, 5], 'C': [1, 3], 'D': [3, 2], 'E': [3, 3],
            'F': [1, 4], 'G': [3, 2], 'H': [1, 4], 'I': [2, 2], 'J': [1, 3],
