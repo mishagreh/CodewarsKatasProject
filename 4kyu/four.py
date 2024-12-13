@@ -18,7 +18,10 @@ def h_check(grid):
     # print(grid_h)
     for i, column in enumerate(grid):
         for j, row in enumerate(column):
-            grid_h[j] += row
+            if row != '':
+                grid_h[j] += row
+            else:
+                grid_h[j] += ' '
 
     # print(grid_h)
     for column in grid_h:
@@ -101,29 +104,50 @@ def who_is_winner(moves):
     # print(moves)
     let_num = dict(map(lambda i, j: i+j, 'ABCDEFG', '0123456'))
     # print(let_num)
-    for column, color in moves:
-        grid[int(let_num[column])] += color
-    # print(grid)
-    print(v_check(grid))
-    v = v_check(grid)
-    print(h_check(grid))
-    h = h_check(grid)
-    # print('first grid', grid)
-    print('d1 =', d1_check(grid))
-    d1 = d1_check(grid)
-    # print('second grid', grid)
-    print(d2_check(grid))
-    d2 = d2_check(grid)
+    steps = []
+    step = 0
+    for move in moves:
+        step += 1
+#         print('step #', step)
+        steps.append(move)
+#         print(steps)
 
-    if v == 'y' or h == 'y' or d1 == 'y' or d2 == 'y':
-        print('Yellow')
-        return 'Yellow'
-    elif v == 'r' or h == 'r' or d1 == 'r' or d2 == 'r':
-        print('Red')
-        return 'Red'
-    else:
-        print('Draw')
-        return 'Draw'
+        gr = grid.copy()
+        for column, color in steps:
+            gr[int(let_num[column])] += color
+        for i, column in enumerate(gr):
+            c = column[::-1].zfill(6)
+            gr[i] = c[::-1]
+
+#         print(gr)
+#         print('v', v_check(grid))
+        v = v_check(gr)
+#         print('h', h_check(grid))
+        h = h_check(gr)
+        # print('first grid', grid)
+#         print('d1', d1_check(grid))
+        d1 = d1_check(gr)
+        # print('second grid', grid)
+#         print('d2', d2_check(grid))
+        d2 = d2_check(gr)
+
+        if v == 'y' or h == 'y' or d1 == 'y' or d2 == 'y':
+            print(gr)
+            print('step', step, 'of', len(moves))
+            print('v:', v, '  h:', h, '  d1:', d1, '  d2:', d2)
+            print('Yellow')
+            return 'Yellow'
+        elif v == 'r' or h == 'r' or d1 == 'r' or d2 == 'r':
+            print(gr)
+            print('step', step, 'of', len(moves))
+            print('v:', v, '  h:', h, '  d1:', d1, '  d2:', d2)
+            print('Red')
+            return 'Red'
+        else:
+            continue
+
+    print('Draw')
+    return 'Draw'
 
 
 moves = [
