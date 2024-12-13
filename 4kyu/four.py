@@ -3,95 +3,39 @@ import pdb
 import numpy as np
 
 
-def v_check(grid):
-    # breakpoint()
-    for column in grid:
+def check_columns_rows(grid, direction):
+
+    if direction == 'columns':
+        gr = grid.copy()
+    elif direction == 'rows':
+        # transpose grid horizontally
+        gr = ['' for i in range(7)]
+        for i, column in enumerate(grid):
+            for j, row in enumerate(column):
+                gr[j] += row
+
+    # look for 4-sequence in rows/columns
+    for column in gr:
         for color in ('r', 'y'):
             if column.find(4*color) != -1:
                 return color
     return
 
 
-def h_check(grid):
-    # breakpoint()
-    grid_h = ['' for i in range(7)]
-    # print(grid_h)
-    for i, column in enumerate(grid):
-        for j, row in enumerate(column):
-            if row != '':
-                grid_h[j] += row
-            else:
-                grid_h[j] += ' '
-
-    # print(grid_h)
-    for column in grid_h:
-        for color in ('r', 'y'):
-            if column.find(4*color) != -1:
-                return color
-    return
-
-
-def d1_check(grid):
+def check_diagonals(grid, diagonal):
     gr = grid.copy()
     for i, column in enumerate(gr):
         c = column[::-1].zfill(6)
-        gr[i] = c[::-1]
-    # print(gr)
-    # a = np.arange(12).reshape(3, 4)
-    # print(a)
-    # print(a.diagonal(1))
-    # print(a.diagonal(2))
-    # for i in range(-1, 3):
-    #     print(a.diagonal(i))
-    for i, j in enumerate(gr):
-        gr[i] = list(j)
-        # print(gr)
-    b = np.array(gr)
-    b = b.reshape(7, 6)
-    # print(b)
+        gr[i] = list(c[::-1])
+    gr_np = np.array(gr)
     diags = []
     for i in range(-6, 6):
-        # print(b.diagonal(i))
-        diags.append(b.diagonal(i).tolist())
-    di = []
-    for i in diags:
-        di.append(''.join(i))
-    #     print(i)
-    # print(di)
-    # diags = diags.tolist()
-    for column in di[3:9]:
-        for color in ('r', 'y'):
-            if column.find(4*color) != -1:
-                return color
-    return
-
-
-def d2_check(grid):
-    gr = grid.copy()
-    for i, column in enumerate(gr):
-        c = column[::-1].zfill(6)
-        gr[i] = c[::-1]
-    # print(gr)
-    # a = np.arange(12).reshape(3, 4)
-    # print(a)
-    # for i in range(-1, 3):
-    #     print(np.flipud(a).diagonal(i))
-    for i, j in enumerate(gr):
-        gr[i] = list(j)
-        # print(gr)
-    b = np.array(gr)
-    b = b.reshape(7, 6)
-    # print(b)
-    diags = []
-    for i in range(-6, 6):
-        # print(np.flipud(b).diagonal(i))
-        diags.append(np.flipud(b).diagonal(i).tolist())
-    di = []
-    for i in diags:
-        di.append(''.join(i))
-        # print(i)
-    # print(di)
-    for column in di[3:9]:
+        if diagonal == 'main':
+            diags.append(''.join(gr_np.diagonal(i)))
+        elif diagonal == 'anti':
+            diags.append(''.join(np.flipud(gr_np).diagonal(i)))
+    # shortest diags removed (3 leftmost and 3 rightmost)
+    for column in diags[3:9]:
         for color in ('r', 'y'):
             if column.find(4*color) != -1:
                 return color
@@ -99,54 +43,33 @@ def d2_check(grid):
 
 
 def who_is_winner(moves):
+    # create empty grid
     grid = ['' for i in range(7)]
+    # reshape moves
     moves = list(map(lambda i: (i[0], 'y' if i[2] == 'Y' else 'r'), moves))
-    # print(moves)
-    let_num = dict(map(lambda i, j: i+j, 'ABCDEFG', '0123456'))
-    # print(let_num)
+    letter_number_converter = dict(map(lambda i, j: i+j, 'ABCDEFG', '0123456'))
+    # go and analyze move by move
     steps = []
-    step = 0
     for move in moves:
-        step += 1
-#         print('step #', step)
-        steps.append(move)
-#         print(steps)
 
+        steps.append(move)
         gr = grid.copy()
         for column, color in steps:
-            gr[int(let_num[column])] += color
+            gr[int(letter_number_converter[column])] += color
         for i, column in enumerate(gr):
             c = column[::-1].zfill(6)
             gr[i] = c[::-1]
 
-#         print(gr)
-#         print('v', v_check(grid))
-        v = v_check(gr)
-#         print('h', h_check(grid))
-        h = h_check(gr)
-        # print('first grid', grid)
-#         print('d1', d1_check(grid))
-        d1 = d1_check(gr)
-        # print('second grid', grid)
-#         print('d2', d2_check(grid))
-        d2 = d2_check(gr)
+        v = check_columns_rows(gr, direction='columns')
+        h = check_columns_rows(gr, direction='rows')
+        d1 = check_diagonals(gr, diagonal='main')
+        d2 = check_diagonals(gr, diagonal='anti')
 
-        if v == 'y' or h == 'y' or d1 == 'y' or d2 == 'y':
-            print(gr)
-            print('step', step, 'of', len(moves))
-            print('v:', v, '  h:', h, '  d1:', d1, '  d2:', d2)
-            print('Yellow')
-            return 'Yellow'
-        elif v == 'r' or h == 'r' or d1 == 'r' or d2 == 'r':
-            print(gr)
-            print('step', step, 'of', len(moves))
-            print('v:', v, '  h:', h, '  d1:', d1, '  d2:', d2)
-            print('Red')
-            return 'Red'
-        else:
-            continue
+        match (v or h or d1 or d2):
+            case 'y': return 'Yellow'
+            case 'r': return 'Red'
+            case _: continue
 
-    print('Draw')
     return 'Draw'
 
 
