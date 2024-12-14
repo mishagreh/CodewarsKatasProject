@@ -12,30 +12,33 @@
 # (242062374), "7 years, 246 days, 15 hours, 32 minutes and 54 seconds")
 # (101956166), "3 years, 85 days, 1 hour, 9 minutes and 26 seconds")
 # (33243586), "1 year, 19 days, 18 hours, 19 minutes and 46 seconds")
-import pdb
+from itertools import accumulate
+from operator import mul
 
 
 def format_duration(seconds):
-    if seconds == 0:
+    if not seconds:
         return 'now'
-    years = divmod(seconds, 24*3600*365)
-    days = divmod(years[1], 24*3600)
-    hours = divmod(days[1], 3600)
-    mins = divmod(hours[1], 60)
-    secs = mins[1], 'placeholder'
+
+    numer = seconds
+    denoms = list(accumulate([1, 60, 60, 24, 365], mul))[::-1]
     words = 'year', 'day', 'hour', 'minute', 'second'
-    # breakpoint()
+    numbers = []
+    for i in range(5):
+        x, y = divmod(numer, denoms[i])
+        numbers.append((x, words[i]))
+        numer = y
+
     output = []
-    for num, dur in enumerate((years, days, hours, mins, secs)):
-        if dur[0] != 0:
+    for number, word in numbers:
+        if number:
             output.append(
-                f'{dur[0]}' + (f' {words[num]}' if dur[0] == 1 else f' {words[num]}s')
+                f'{number}' + (f' {word}' if number == 1 else f' {word}s')
             )
-    # print(output)
     if len(output) > 1:
         return ', '.join(output[:-1]) + ' and ' + output[-1]
     else:
-        return output[-1]
+        return output[0]
 
 
-print(format_duration(0))
+print(format_duration(86404))
