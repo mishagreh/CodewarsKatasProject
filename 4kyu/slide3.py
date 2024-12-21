@@ -8,7 +8,6 @@
 # longest_slide_down([[3], [7, 4], [2, 4, 6], [8, 5, 9, 3]]), 23
 
 
-# def recur(pyr, memo, x=0, y=0):
 def recur(pyr, memo, x=0, y=0):
     if y == len(pyr) - 1:
         return pyr[y][x]
@@ -16,7 +15,7 @@ def recur(pyr, memo, x=0, y=0):
     if _ not in memo.keys():
         left = recur(pyr, memo, x, y+1)
         right = recur(pyr, memo, x+1, y+1)
-        memo[_] = (right if left < right else left) + pyr[y][x]
+        memo[_] = max(right, left) + pyr[y][x]
     return memo[_]
 
 
