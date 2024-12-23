@@ -3,62 +3,63 @@
 #
 from collections import deque
 import pdb
+from pprint import pprint
 
 
 def ant(grid, col, row, n, dir=0):
-    grid = deque(grid)
-    d = deque([0, 1, 2, 3], maxlen=4)
+    gr = grid.copy()
+    # dirs = deque([0, 1, 2, 3])
+    dirs = [0, 1, 2, 3]
     # breakpoint()
+    if dir is not None:
+        for i in range(dir):
+            # dirs.append(dirs.popleft())
+            print(dirs[1:])
+            # dirs = dirs[1:] + dirs[0]
+            dirs.append(dirs.pop(0))
     for move in range(n):
-        # print(move)
-        # try:
-        color = grid[col][row]
-        if color:
-            d.append(d.popleft())
-            print(col, row)
-            print(grid[col][row])
-            grid[col][row] = 0
-            print(grid[col][row])
+        if gr[row][col]:
+            # dirs.append(dirs.popleft())
+            # dirs = dirs[1:].append(dirs[0])
+            dirs.append(dirs.pop(0))
         else:
-            d.appendleft(d.pop())
-            print(col, row)
-            print('bef:', grid[col][row])
-            grid[col][row] = 1
-            print('aft:', grid[col][row])
-        dir = d[0]
-        match dir:
+            # dirs.appendleft(dirs.pop())
+            # dirs = dirs[-1].append(dirs[1:])
+            dirs.insert(0, dirs.pop())
+        gr[row][col] = int(not gr[row][col])
+        match dirs[0]:
             case 0:
+                row -= 1
+                if row < 0:
+                    row = 0
+                    gr.insert(0, [0]*len(gr[0]))
+            case 1:
+                col += 1
+                if col == len(gr[0]):
+                    for i in gr:
+                        i.append(0)
+            case 2:
+                row += 1
+                if row == len(gr):
+                    gr.append([0]*len(gr[0]))
+            case 3:
                 col -= 1
                 if col < 0:
                     col = 0
-                    grid.appendleft([0]*len(grid[0]))
-            case 1:
-                row += 1
-                if row == len(grid[0]):
-                    print('case 1:', grid)
-                    for i in grid:
-                        i.append(0)
-                    print('case 1:', grid)
-            case 2:
-                col += 1
-                if col == len(grid[0]):
-                    print('case 2:', grid)
-                    grid.append([0]*len(grid[0]))
-            case 3:
-                row -= 1
-                if row < 0:
-                    print('case 3:', grid)
-                    for i, j in enumerate(grid):
-                        grid[i] = [0] + j
-    print(grid, col, row, n, dir)
-    print(list(grid))
-    print('___')
-    return list(grid)
+                    for i in gr:
+                        i.insert(0, 0)
+    print(list(gr))
+    return list(gr)
 
 
-ant([[1]], 0, 0, 1, 0)
+# ant([[1]], 0, 0, 1, 0)
 # expected=[[0,0]])
-ant([[0]], 0, 0, 1, 0)
+# ant([[0]], 0, 0, 1, 0)
 # expected=[[0,1]])
-ant([[1]], 0, 0, 3, 0)
+# ant([[1]], 0, 0, 3, 0)
 # expected=[[0,1],[0,1]])
+ant([
+  [0, 0, 0],
+  [0, 0, 0],
+  [0, 0, 0],
+], 1, 1, 20, 2)
